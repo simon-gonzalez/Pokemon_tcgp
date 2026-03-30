@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon TCG Pocket Simulator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar">
+        <div class="logo">
+            <span class="logo-icon">⚡</span>
+            <h1>PTCGP<br><small>Simulator</small></h1>
+        </div>
+        <ul>
+            <li class="active" data-page="dashboard"><span class="nav-icon">📊</span> Dashboard</li>
+            <li data-page="battle"><span class="nav-icon">⚔️</span> Batalla</li>
+            <li data-page="replay"><span class="nav-icon">▶️</span> Replay</li>
+            <li data-page="decks"><span class="nav-icon">🃏</span> Mazos</li>
+            <li data-page="logs"><span class="nav-icon">📋</span> Registros</li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="content">
+
+        <!-- ═══ DASHBOARD ═══ -->
+        <section id="page-dashboard" class="page active">
+            <header>
+                <h2>Dashboard - Tabla de Matchups</h2>
+                <p>Simula todos los mazos entre si para ver quien domina el meta.</p>
+            </header>
+            <div class="controls-bar">
+                <label>Partidas por matchup:
+                    <select id="dash-games">
+                        <option value="20">20 (rapido)</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                        <option value="200">200 (preciso)</option>
+                    </select>
+                </label>
+                <button id="btn-run-matchups" class="btn-primary">Ejecutar Matchup Table</button>
+            </div>
+
+            <div id="dash-loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Simulando partidas... esto puede tomar unos segundos</p>
+            </div>
+
+            <!-- Rankings -->
+            <div id="dash-rankings" class="hidden">
+                <h3>Rankings Generales</h3>
+                <div id="rankings-cards" class="rankings-grid"></div>
+            </div>
+
+            <!-- Matchup Matrix -->
+            <div id="dash-matrix" class="hidden">
+                <h3>Tabla de Matchups</h3>
+                <div class="table-wrapper">
+                    <table id="matchup-table"></table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ BATTLE ═══ -->
+        <section id="page-battle" class="page">
+            <header>
+                <h2>Batalla - Simular Matchup</h2>
+                <p>Escoge dos mazos y simula multiples partidas.</p>
+            </header>
+            <div class="battle-setup">
+                <div class="deck-selector">
+                    <h3>Mazo 1</h3>
+                    <select id="battle-deck1"></select>
+                    <div id="battle-deck1-info" class="deck-mini-info"></div>
+                </div>
+                <div class="vs-badge">VS</div>
+                <div class="deck-selector">
+                    <h3>Mazo 2</h3>
+                    <select id="battle-deck2"></select>
+                    <div id="battle-deck2-info" class="deck-mini-info"></div>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <label>Partidas:
+                    <select id="battle-games">
+                        <option value="10">10</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </label>
+                <label>Modo:
+                    <select id="battle-mode">
+                        <option value="ai_vs_ai">AI vs AI</option>
+                        <option value="ai_vs_random">AI vs Random</option>
+                    </select>
+                </label>
+                <button id="btn-battle" class="btn-primary">Iniciar Batalla</button>
+            </div>
+            <div id="battle-loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Simulando batalla...</p>
+            </div>
+            <div id="battle-results" class="hidden">
+                <div class="result-cards">
+                    <div class="result-card" id="result-deck1">
+                        <h4 id="result-name1">-</h4>
+                        <div class="big-number" id="result-wr1">0%</div>
+                        <p><span id="result-wins1">0</span> victorias</p>
+                    </div>
+                    <div class="result-card result-meta">
+                        <div class="stat-row"><span>Partidas</span><span id="result-total">0</span></div>
+                        <div class="stat-row"><span>Empates</span><span id="result-draws">0</span></div>
+                        <div class="stat-row"><span>Turnos prom.</span><span id="result-turns">0</span></div>
+                        <div class="stat-row"><span>Log</span><span id="result-log">-</span></div>
+                    </div>
+                    <div class="result-card" id="result-deck2">
+                        <h4 id="result-name2">-</h4>
+                        <div class="big-number" id="result-wr2">0%</div>
+                        <p><span id="result-wins2">0</span> victorias</p>
+                    </div>
+                </div>
+                <div class="win-bar-container">
+                    <div class="win-bar" id="win-bar-1"></div>
+                    <div class="win-bar win-bar-2" id="win-bar-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ REPLAY ═══ -->
+        <section id="page-replay" class="page">
+            <header>
+                <h2>Replay - Ver Partida en Vivo</h2>
+                <p>Observa una partida turno a turno entre dos mazos.</p>
+            </header>
+            <div class="battle-setup">
+                <div class="deck-selector">
+                    <h3>Mazo 1</h3>
+                    <select id="replay-deck1"></select>
+                </div>
+                <div class="vs-badge">VS</div>
+                <div class="deck-selector">
+                    <h3>Mazo 2</h3>
+                    <select id="replay-deck2"></select>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button id="btn-replay" class="btn-primary">Jugar Partida</button>
+                <button id="btn-replay-next" class="btn-secondary hidden">Siguiente Turno ▶</button>
+                <button id="btn-replay-all" class="btn-secondary hidden">Ver Todo ⏩</button>
+                <label>Velocidad:
+                    <select id="replay-speed">
+                        <option value="1000">Lento</option>
+                        <option value="500" selected>Normal</option>
+                        <option value="200">Rapido</option>
+                    </select>
+                </label>
+            </div>
+            <div id="replay-loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Generando partida...</p>
+            </div>
+
+            <!-- Game Board -->
+            <div id="game-board" class="hidden">
+                <div class="board-header">
+                    <div class="player-label p1-label">
+                        <span id="board-p1-name">Jugador 1</span>
+                        <span class="prize-count">Premios: <b id="board-p1-prizes">3</b></span>
+                    </div>
+                    <div class="turn-indicator">
+                        Turno <span id="board-turn">0</span>
+                    </div>
+                    <div class="player-label p2-label">
+                        <span id="board-p2-name">Jugador 2</span>
+                        <span class="prize-count">Premios: <b id="board-p2-prizes">3</b></span>
+                    </div>
+                </div>
+                <div id="game-log" class="game-log"></div>
+                <div id="game-winner" class="game-winner hidden"></div>
+            </div>
+        </section>
+
+        <!-- ═══ DECKS ═══ -->
+        <section id="page-decks" class="page">
+            <header>
+                <h2>Mazos Meta</h2>
+                <p>Todos los mazos disponibles con sus cartas y estrategias.</p>
+            </header>
+            <div id="decks-container" class="decks-grid"></div>
+        </section>
+
+        <!-- ═══ LOGS ═══ -->
+        <section id="page-logs" class="page">
+            <header>
+                <h2>Registros</h2>
+                <p>Historial de todas las simulaciones ejecutadas.</p>
+            </header>
+            <button id="btn-refresh-logs" class="btn-secondary">Actualizar</button>
+            <div id="logs-list" class="logs-list"></div>
+            <div id="log-viewer" class="log-viewer hidden">
+                <button id="btn-close-log" class="btn-secondary">Cerrar</button>
+                <pre id="log-content"></pre>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
